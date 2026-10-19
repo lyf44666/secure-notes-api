@@ -1,0 +1,121 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}body{margin:0;background:#e8edf2;font-family:"Segoe UI",Arial,sans-serif;color:#17212b}
+.page{width:1440px;min-height:1120px;padding:58px 72px;background:#f7f9fb}
+.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1f5b8f;padding-bottom:22px}
+h1{font-size:38px;margin:0 0 8px;color:#12283d}.sub{font-size:17px;color:#5a6a79}
+.badge{font-size:14px;font-weight:700;color:#155e3f;background:#dff3e8;border:1px solid #a8d9bd;padding:9px 14px;border-radius:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px}
+.fact{background:white;border:1px solid #cfd9e2;border-left:5px solid #1f5b8f;padding:18px 20px;border-radius:3px}
+.fact b{display:block;font-size:14px;text-transform:uppercase;color:#52677a;margin-bottom:7px}.fact span{font-size:19px;font-weight:650}
+h2{font-size:21px;margin:30px 0 12px;color:#183b58}
+.terminal{background:#101820;border-radius:6px;padding:22px;box-shadow:0 8px 22px rgba(16,24,32,.18);overflow:hidden}
+.bar{display:flex;gap:8px;margin-bottom:14px}.dot{width:11px;height:11px;border-radius:50%;background:#5c6874}.dot:nth-child(1){background:#e56b6f}.dot:nth-child(2){background:#e6bd5c}.dot:nth-child(3){background:#58b987}
+pre{margin:0;color:#d9e6ef;font:14px/1.42 Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.note{margin-top:18px;font-size:15px;color:#516475}.foot{margin-top:22px;border-top:1px solid #cbd5df;padding-top:14px;font-size:13px;color:#6b7a87;display:flex;justify-content:space-between}
+</style></head><body><main class="page">
+<div class="top"><div><h1>Secure REST API Verification</h1><div class="sub">Laboratory Work 1 - local functional and security regression evidence</div></div><div class="badge">6 / 6 TESTS PASSED</div></div>
+<div class="grid"><div class="fact"><b>Authentication</b><span>JWT + scrypt</span></div><div class="fact"><b>Injection controls</b><span>Parameterized SQL + output escaping</span></div><div class="fact"><b>Unauthorized access</b><span>HTTP 401 verified</span></div><div class="fact"><b>CI security checks</b><span>CodeQL + npm audit</span></div></div>
+<h2>Captured execution output</h2><div class="terminal"><div class="bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><pre>$ node --test --test-reporter=spec
+✔ health endpoint responds (193.385ms)
+✔ protected data endpoint rejects requests without a token (146.6175ms)
+✔ SQL injection login payload does not bypass authentication (174.5296ms)
+✔ valid login issues a JWT and data access succeeds (181.9409ms)
+✔ tampered JWT is rejected (176.376ms)
+✔ user content is escaped in API responses (180.3693ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1282.7499
+
+
+$ curl -sS -i http://127.0.0.1:3107/health
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 15
+X-Request-Id: 5bee5e5f-d592-4652-8b73-05a2bc2c6dd0
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"status":"ok"}
+
+$ curl -sS -i http://127.0.0.1:3107/api/data
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 24
+X-Request-Id: 89a229c8-fe1b-43ee-b333-5109a7ed47c5
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Unauthorized"}
+
+$ curl -sS -i -X POST http://127.0.0.1:3107/auth/login -H Content-Type: application/json --data-binary {"username":"analyst","password":"Analyst-Demo-2026!"}
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 364
+X-Request-Id: e6522eb1-b850-405d-ac2d-6e245f773e44
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwidXNlcm5hbWUiOiJhbmFseXN0Iiwicm9sZSI6ImFuYWx5c3QiLCJpYXQiOjE3OTIzNzgxNzYsImV4cCI6MTc5MjM3OTA3NiwiaXNzIjoic2VjdXJlLW5vdGVzLWFwaSIsImF1ZCI6InNlY3VyZS1ub3Rlcy13ZWIifQ.tbrvUSXPYO20iZkTI32MAggEZDeP4y4XrxkAkhRG4B8","token_type":"Bearer","expires_in":900,"user":{"id":2,"username":"analyst","role":"analyst"}}
+
+$ curl -sS -i -X POST http://127.0.0.1:3107/auth/login -H Content-Type: application/json --data-binary {"username":"' OR 1=1--","password":"anything"}
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 31
+X-Request-Id: 6dc68cde-c8a7-4bc1-9239-f445f189d1c1
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Invalid credentials"}
+$ curl -sS -i -X POST http://127.0.0.1:3107/api/notes -H Content-Type: application/json -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwidXNlcm5hbWUiOiJhbmFseXN0Iiwicm9sZSI6ImFuYWx5c3QiLCJpYXQiOjE3OTIzNzgxNzYsImV4cCI6MTc5MjM3OTA3NiwiaXNzIjoic2VjdXJlLW5vdGVzLWFwaSIsImF1ZCI6InNlY3VyZS1ub3Rlcy13ZWIifQ.tbrvUSXPYO20iZkTI32MAggEZDeP4y4XrxkAkhRG4B8 --data-binary {"content":"&lt;img src=x onerror=alert(1)&gt;"}
+HTTP/1.1 201 Created
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 90
+X-Request-Id: 88974cc4-a084-47ee-844d-bb5e0cb5d1b4
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"id":3,"content":"&amp;lt;img src=x onerror=alert(1)&amp;gt;","created_at":"2026-10-19 02:49:36"}
+</pre></div>
+<div class="note">This page records local execution. The GitHub Actions screenshot must be captured after pushing the repository.</div>
+<div class="foot"><span>Liang Yuefan | HDU 23320319</span><span>19 October 2026</span></div>
+</main></body></html>

@@ -1,0 +1,15 @@
+{
+  "name": "secure-notes-api",
+  "version": "1.0.0",
+  "description": "Educational secure REST API with JWT authentication, parameterized SQL, output escaping, and CI security checks.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test --test-reporter=spec",
+    "audit": "npm audit --audit-level=high"
+  }
+}

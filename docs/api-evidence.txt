@@ -1,0 +1,83 @@
+$ curl -sS -i http://127.0.0.1:3107/health
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 15
+X-Request-Id: 5bee5e5f-d592-4652-8b73-05a2bc2c6dd0
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"status":"ok"}
+
+$ curl -sS -i http://127.0.0.1:3107/api/data
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 24
+X-Request-Id: 89a229c8-fe1b-43ee-b333-5109a7ed47c5
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Unauthorized"}
+
+$ curl -sS -i -X POST http://127.0.0.1:3107/auth/login -H Content-Type: application/json --data-binary {"username":"analyst","password":"Analyst-Demo-2026!"}
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 364
+X-Request-Id: e6522eb1-b850-405d-ac2d-6e245f773e44
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwidXNlcm5hbWUiOiJhbmFseXN0Iiwicm9sZSI6ImFuYWx5c3QiLCJpYXQiOjE3OTIzNzgxNzYsImV4cCI6MTc5MjM3OTA3NiwiaXNzIjoic2VjdXJlLW5vdGVzLWFwaSIsImF1ZCI6InNlY3VyZS1ub3Rlcy13ZWIifQ.tbrvUSXPYO20iZkTI32MAggEZDeP4y4XrxkAkhRG4B8","token_type":"Bearer","expires_in":900,"user":{"id":2,"username":"analyst","role":"analyst"}}
+
+$ curl -sS -i -X POST http://127.0.0.1:3107/auth/login -H Content-Type: application/json --data-binary {"username":"' OR 1=1--","password":"anything"}
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 31
+X-Request-Id: 6dc68cde-c8a7-4bc1-9239-f445f189d1c1
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"error":"Invalid credentials"}
+$ curl -sS -i -X POST http://127.0.0.1:3107/api/notes -H Content-Type: application/json -H Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwidXNlcm5hbWUiOiJhbmFseXN0Iiwicm9sZSI6ImFuYWx5c3QiLCJpYXQiOjE3OTIzNzgxNzYsImV4cCI6MTc5MjM3OTA3NiwiaXNzIjoic2VjdXJlLW5vdGVzLWFwaSIsImF1ZCI6InNlY3VyZS1ub3Rlcy13ZWIifQ.tbrvUSXPYO20iZkTI32MAggEZDeP4y4XrxkAkhRG4B8 --data-binary {"content":"<img src=x onerror=alert(1)>"}
+HTTP/1.1 201 Created
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+Cross-Origin-Resource-Policy: same-origin
+Cache-Control: no-store
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Type: application/json; charset=utf-8
+Content-Length: 90
+X-Request-Id: 88974cc4-a084-47ee-844d-bb5e0cb5d1b4
+Date: Mon, 19 Oct 2026 02:49:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"id":3,"content":"&lt;img src=x onerror=alert(1)&gt;","created_at":"2026-10-19 02:49:36"}
