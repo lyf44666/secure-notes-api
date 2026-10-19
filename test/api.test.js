@@ -81,7 +81,14 @@ test("tampered JWT is rejected", async () => {
   try {
     const response = await login(fixture.base, "analyst", "Analyst-Demo-2026!");
     const payload = await response.json();
-    const tampered = payload.token.slice(0, -1) + "A";
+    const [headerSegment, payloadSegment, signatureSegment] = payload.token.split(".");
+    const signatureBytes = Buffer.from(signatureSegment, "base64url");
+    signatureBytes[0] ^= 0x01;
+    const tampered = [
+      headerSegment,
+      payloadSegment,
+      signatureBytes.toString("base64url"),
+    ].join(".");
     const dataResponse = await fetch(fixture.base + "/api/data", {
       headers: { Authorization: "Bearer " + tampered },
     });
