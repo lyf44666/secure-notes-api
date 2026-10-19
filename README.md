@@ -103,8 +103,15 @@ escaped entities.
 3. npm audit --audit-level=high performs software composition analysis.
 4. CodeQL performs static application security testing.
 
-After pushing the repository, open the latest green security-ci run under the
-repository's Actions tab and save a full-page screenshot for the report.
+The public repository is https://github.com/lyf44666/secure-notes-api.
+The workflow runs on every push. The first successful run is recorded at
+https://github.com/lyf44666/secure-notes-api/actions/runs/39198167716.
+
+![Successful security-ci run](docs/actions-success.png)
+
+![test-and-sca job](docs/actions-test-sca.png)
+
+![codeql-sast job](docs/actions-codeql-sast.png)
 
 ## CVE analysis
 
