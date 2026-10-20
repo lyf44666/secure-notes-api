@@ -104,8 +104,8 @@ escaped entities.
 4. CodeQL performs static application security testing.
 
 The public repository is https://github.com/lyf44666/secure-notes-api.
-The workflow runs on every push. The first successful run is recorded at
-https://github.com/lyf44666/secure-notes-api/actions/runs/39198167716.
+The workflow runs on every push. The latest successful run is available at
+https://github.com/lyf44666/secure-notes-api/actions.
 
 ![Successful security-ci run](docs/actions-success.png)
 
@@ -115,11 +115,22 @@ https://github.com/lyf44666/secure-notes-api/actions/runs/39198167716.
 
 ## CVE analysis
 
-The selected vulnerability is CVE-2021-41773, a path traversal and potential
-remote code execution vulnerability in Apache HTTP Server 2.4.49. The complete
-reproduction and fixed environment are in vulhub/CVE-2021-41773.
+The selected vulnerability is CVE-2015-1427, a Groovy sandbox bypass that leads
+to remote code execution in Elasticsearch. Versions before 1.3.8 and 1.4.x
+before 1.4.3 are affected. The complete reproduction and fixed environment are
+in vulhub/CVE-2015-1427.
 
-The vulnerable container exposes /etc/passwd through a percent-encoded
-traversal. The fixed environment upgrades to Apache 2.4.51 and denies
-filesystem access by default. Run the supplied scripts on a machine with
-Docker and attach the resulting terminal screenshots to the report.
+The vulnerable environment runs Elasticsearch 1.4.2 with dynamic scripting
+enabled. The exploit sends a crafted script_fields expression that uses
+reflection to reach java.lang.Runtime and execute id. The fixed environment
+upgrades to Elasticsearch 1.4.3 and disables dynamic scripting.
+
+~~~bash
+cd vulhub/CVE-2015-1427
+docker compose -f docker-compose.vulnerable.yml up -d
+./exploit.sh http://localhost:9200
+docker compose -f docker-compose.vulnerable.yml down
+docker compose -f docker-compose.fixed.yml up -d
+./verify-fix.sh http://localhost:9200
+~~~
+
