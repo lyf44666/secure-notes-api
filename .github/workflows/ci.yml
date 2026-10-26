@@ -22,7 +22,18 @@ jobs:
       - name: Run tests
         run: npm test
       - name: Software composition analysis
-        run: npm audit --audit-level=high
+        run: |
+          mkdir -p sca
+          npm ls --all > sca/dependency-tree.txt 2>&1 || true
+          npm audit --json > sca/npm-audit.json || true
+          npm audit --audit-level=high | tee sca/npm-audit.txt
+      - name: Upload SCA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sca-report-${{ github.run_attempt }}
+          path: sca/
+          if-no-files-found: error
 
   codeql-sast:
     runs-on: ubuntu-latest
